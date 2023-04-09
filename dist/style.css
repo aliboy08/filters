@@ -1,0 +1,32 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 1rem;
+    font-size: 15px;
+}
+
+.buttons,
+.filters {
+    display: flex;
+    gap: 10px;
+}
+
+.items {
+	display: flex;
+	gap: 1rem;
+	flex-wrap: wrap;
+    margin: 1rem 0;
+}
+
+.item {
+    display: inline-flex;
+    height: 150px;
+    width: 150px;
+    background: #eee;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
