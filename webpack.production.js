@@ -3,13 +3,14 @@ const path = require('path');
 module.exports = {
     mode: 'production',
     entry: {
-        main: './src/js/main.js',
+        products: './src/js/products.js',
+        posts: './src/js/posts.js',
         // another_module: './src/js/another_module.js',
     },
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist/production/js'),
-        // clean: true,
+        clean: true,
     },
     optimization: {
         runtimeChunk: 'single',

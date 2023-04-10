@@ -3,17 +3,18 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     entry: {
-        main: './src/js/main.js',
+        products: './src/js/products.js',
+        posts: './src/js/posts.js',
         // another_module: './src/js/another_module.js',
     },
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist/development/js'),
-        // clean: true,
+        clean: true,
     },
     optimization: {
         minimize: false,
-        runtimeChunk: 'single',
+        // runtimeChunk: 'single',
         splitChunks: {
             cacheGroups: {
                 common: {

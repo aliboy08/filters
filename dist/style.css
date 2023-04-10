@@ -29,4 +29,17 @@ body {
     justify-content: center;
     align-items: center;
     padding: 1rem;
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(1);
+    transition: filter .4s ease;
+}
+.item:hover {
+    filter: none;
+}
+
+.buttons .selected {
+    background-color: #222;
+	color: #fff;
+	border-radius: 3px;
 }

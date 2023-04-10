@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filters - Products</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Filters - Products</h1>
+
+    <div class="filters">
+
+        <select class="filter_price">
+            <option value="">Price</option>
+            <option value="0,100">$100 below</option>
+            <option value="100,200">$100 - $200</option>
+            <option value="200,300">$200 - $300</option>
+            <option value="400,500">$400 - $500</option>
+            <option value="500,600">$500 - $600</option>
+            <option value="600,+">$600+</option>
+        </select>
+
+        <div class="filter_brand_con">
+            <select class="filter_brand" data-filter-key="brand"></select>
+            <div class="selected_options"></div>
+        </div>
+
+        <div class="filter_category buttons" data-filter-key="category"></div>
+
+    </div>
+    
+    <div class="items"></div>
+
+    <script src="data/products.js"></script>
+    <script src="development/js/common.bundle.js"></script>
+    <script src="development/js/products.bundle.js"></script>
+</body>
+</html>
