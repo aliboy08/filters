@@ -1,4 +1,4 @@
-import Filters from "./filters";
+import FF_Filters from "./ff-filters";
 
 function init(){
     
@@ -16,8 +16,8 @@ function init(){
         // create items
         var item = document.createElement('div');
         item.classList.add('item');
-        // item.innerHTML = item_data.title;
-        item.style.backgroundImage = 'url('+ item_data.thumbnail +')';
+        item.innerHTML = item_data.title;
+        // item.style.backgroundImage = 'url('+ item_data.thumbnail +')';
         items_con.appendChild(item);
 
         item_data.el = item;
@@ -55,8 +55,8 @@ function init(){
     temp_el.innerHTML = temp_html;
 
 
-    var filters = new Filters({
-        filter_return: 'el',
+    var filters = new FF_Filters({
+        return_data: 'el',
     });
 
     var selected_brands = [];

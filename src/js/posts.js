@@ -1,4 +1,5 @@
-import Filters from "./filters";
+import FF_Filters from "./ff-filters";
+import FF_Search from "./ff-search";
 
 console.log(items_data);
 
@@ -17,7 +18,12 @@ function init(){
         // create items
         var item = document.createElement('div');
         item.classList.add('item');
-        item.innerHTML = item_data.title;
+
+        var title = document.createElement('h3');
+        title.classList.add('title');
+        title.innerHTML = item_data.title;
+        item.appendChild(title);
+
         items_con.appendChild(item);
 
         item_data.el = item;
@@ -51,9 +57,26 @@ function init(){
     })
     temp_el.innerHTML = temp_html;
 
-    var filters = new Filters({
-        filter_return: 'all',
+    var filters = new FF_Filters({
+        return_data: 'all',
     });
+    filters.set_items(items);
+
+    var search = new FF_Search({
+        el: '.filter_search',
+        return_data: 'el',
+        search_fields: [
+            'title',
+        ],
+    });
+    search.set_items(items);
+    search.on('search',res=>{
+        // console.log( 'search', res );
+        items_con.innerHTML = '';
+        res.results.forEach(item=>{
+            items_con.append(item.el);
+        })
+    })
 
     // var selected_options = [];
     // var selected_options_con = document.querySelector('.filter_tags_con .selected_options');
@@ -80,8 +103,6 @@ function init(){
     //     }
     // });
     
-    filters.set_items(items);
-
     // filters.add_field({
     //     // type: 'dropdown_multiple',
     //     type: 'dropdown',
@@ -106,8 +127,6 @@ function init(){
             items_con.append(item.el);
         })
     });
-
-    window.filters = filters;
 
 }
 init();

@@ -1,4 +1,5 @@
-function Filters(options){
+console.log('FF_Filters')
+function FF_Filters(options){
     var _ = this;
     _.options = options;
     _.events = {};
@@ -8,54 +9,20 @@ function Filters(options){
     _.fields = {};
     _.debounce;
     _.settings('debounce_duration', 500);
-    _.settings('filter_return', 'id');
+    _.settings('return_data', 'id');
+    return this;
 }
 
-Filters.prototype.settings = function(option_key, default_value){
+FF_Filters.prototype.settings = function(option_key, default_value){
     if( typeof this.options[option_key] !== 'undefined' ) {
         this[option_key] = this.options[option_key];
     }
     else {
         this[option_key] = default_value;
     }
-} 
-
-Filters.prototype.set_items = function(items){
-    this.items = items;
 }
 
-Filters.prototype.set = function(filter_key, filter_value){
-    this.filters[filter_key] = filter_value;
-}
-
-Filters.prototype.add = function(filter_key, value_to_add){
-    this.filters[filter_key].push(value_to_add);
-}
-
-Filters.prototype.remove = function(filter_key, value_to_remove){
-    var _ = this;
-    var index_to_remove = _.filters[filter_key].indexOf(value_to_remove);
-    if( index_to_remove !== -1 ) {
-        _.filters[filter_key].splice(index_to_remove, 1);
-    }
-}
-
-Filters.prototype.update = function(){
-    var _ = this;
-    var items_to_show = _.filter_items();
-    // console.log( 'update', { items_to_show } )
-    _.event_dispatcher( 'update', { items_to_show: items_to_show, active_filters: _.active_filters } );
-}
-
-Filters.prototype.debounced_update = function(){
-    var _ = this;
-    clearTimeout(_.debounce);
-    _.debounce = setTimeout(function(){
-        _.update();
-    }, _.debounce_duration);
-}
-
-Filters.prototype.on = function( event_name, fn ){
+FF_Filters.prototype.on = function( event_name, fn ){
     var _ = this;
     if( typeof _.events[event_name] === 'undefined' ) {
         _.events[event_name] = [];
@@ -63,7 +30,7 @@ Filters.prototype.on = function( event_name, fn ){
     _.events[event_name].push(fn);
 }
 
-Filters.prototype.event_dispatcher = function( event_name, params ){
+FF_Filters.prototype.event_dispatcher = function( event_name, params ){
     var _ = this;
     if( typeof _.events[event_name] !== 'undefined' ) {
         _.events[event_name].forEach(function(fn){
@@ -72,7 +39,42 @@ Filters.prototype.event_dispatcher = function( event_name, params ){
     }
 }
 
-Filters.prototype.add_field = function(options){
+FF_Filters.prototype.set_items = function(items){
+    this.items = items;
+}
+
+FF_Filters.prototype.set = function(filter_key, filter_value){
+    this.filters[filter_key] = filter_value;
+}
+
+FF_Filters.prototype.add = function(filter_key, value_to_add){
+    this.filters[filter_key].push(value_to_add);
+}
+
+FF_Filters.prototype.remove = function(filter_key, value_to_remove){
+    var _ = this;
+    var index_to_remove = _.filters[filter_key].indexOf(value_to_remove);
+    if( index_to_remove !== -1 ) {
+        _.filters[filter_key].splice(index_to_remove, 1);
+    }
+}
+
+FF_Filters.prototype.update = function(){
+    var _ = this;
+    var items_to_show = _.filter_items();
+    // console.log( 'update', { items_to_show } )
+    _.event_dispatcher( 'update', { items_to_show: items_to_show, active_filters: _.active_filters } );
+}
+
+FF_Filters.prototype.debounced_update = function(){
+    var _ = this;
+    clearTimeout(_.debounce);
+    _.debounce = setTimeout(function(){
+        _.update();
+    }, _.debounce_duration);
+}
+
+FF_Filters.prototype.add_field = function(options){
     var _ = this;
     // _.fields[options.id] = options;
     switch( options.type ) {
@@ -85,7 +87,7 @@ Filters.prototype.add_field = function(options){
     }
 }
 
-Filters.prototype.prepare_field = function(options){
+FF_Filters.prototype.prepare_field = function(options){
     var _ = this;
 
     if( typeof options.el === 'string' ) {
@@ -115,46 +117,40 @@ Filters.prototype.prepare_field = function(options){
     return field;
 }
 
-Filters.prototype.filter_items = function(){
+FF_Filters.prototype.filter_items = function(){
     var _ = this;
 
     _.active_filters = _.get_active_filters();
 
     var items_to_show = [];
 
-    if( _.filter_return == 'all' ) {
-        _.items.forEach(function(item){
-            if( _.show_item(item, _.active_filters ) ) {
-                items_to_show.push(item);
-            }
-        });
-    }
-    else {
-        _.items.forEach(function(item){
-            if( _.show_item(item, _.active_filters ) ) {
-                items_to_show.push(item[_.filter_return]);
-            }
-        });
-    }
+    _.items.forEach(function(item){
+        if( !_.active_filters.length || _.show_item(item, _.active_filters ) ) {
+            items_to_show.push(_.return_item(item));
+        }
+    });
 
     return items_to_show;
 }
 
-Filters.prototype.show_item = function(item, filters){
+FF_Filters.prototype.return_item = function(item){
+    if( this.return_data == 'all' ) return item;
+    return item[this.return_data];
+}
+
+FF_Filters.prototype.show_item = function(item, filters){
     var _ = this;
 
-    for( var i = 0; i < filters.length; i++ ) {
+    for( var i = 0; i < FF_Filters.length; i++ ) {
 
         var filter = filters[i];
         var item_value = item[filter.key];
-
-        console.log( filter.key, filter.value );
+        if( !item_value ) continue;
 
         if( _.fields[filter.key].filter_type == 'range' ) {
             var filter_values = filter.value.split(',');
             var filter_value_min = parseInt(filter_values[0]);
             var filter_value_max = parseInt(filter_values[1]);
-            console.log( filter_value_min, filter_value_max )
             if( filter_value_min > item_value || filter_value_max < item_value ) {
                 return false;
             }
@@ -209,7 +205,7 @@ Filters.prototype.show_item = function(item, filters){
     return true;
 }
 
-Filters.prototype.get_active_filters = function(){
+FF_Filters.prototype.get_active_filters = function(){
     var _ = this;
     var filters_to_check = [];
     
@@ -228,7 +224,7 @@ Filters.prototype.get_active_filters = function(){
     return filters_to_check;
 }
 
-Filters.prototype.init_type_dropdown = function(options){
+FF_Filters.prototype.init_type_dropdown = function(options){
     var _ = this;
     var field = _.prepare_field(options);
     field.current_value = '';
@@ -251,7 +247,7 @@ Filters.prototype.init_type_dropdown = function(options){
     }
 }
 
-Filters.prototype.init_type_dropdown_multiple = function(options){
+FF_Filters.prototype.init_type_dropdown_multiple = function(options){
     var _ = this;
     var field = _.prepare_field(options);
     _.filters[field.key] = [];
@@ -280,7 +276,7 @@ Filters.prototype.init_type_dropdown_multiple = function(options){
     }
 }
 
-Filters.prototype.init_type_items_single = function(options){
+FF_Filters.prototype.init_type_items_single = function(options){
 
     var _ = this;
     var field = _.prepare_field(options);
@@ -320,7 +316,7 @@ Filters.prototype.init_type_items_single = function(options){
 
 }
 
-Filters.prototype.init_type_items_multiple = function(options){
+FF_Filters.prototype.init_type_items_multiple = function(options){
     var _ = this;
     var field = _.prepare_field(options);
     _.filters[field.key] = [];
@@ -341,4 +337,4 @@ Filters.prototype.init_type_items_multiple = function(options){
     });
 }
 
-export default Filters;
+export default FF_Filters;
