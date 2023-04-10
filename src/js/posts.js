@@ -1,5 +1,6 @@
 import FF_Filters from "./ff-filters";
 import FF_Search from "./ff-search";
+import FF_Sort from "./ff-sort";
 
 console.log(items_data);
 
@@ -21,7 +22,7 @@ function init(){
 
         var title = document.createElement('h3');
         title.classList.add('title');
-        title.innerHTML = item_data.title;
+        title.innerHTML = item_data.title +' - ' + item_data.reactions;
         item.appendChild(title);
 
         items_con.appendChild(item);
@@ -57,76 +58,75 @@ function init(){
     })
     temp_el.innerHTML = temp_html;
 
-    var filters = new FF_Filters({
+    // Filters
+    var filterer = new FF_Filters({
+        items: items,
         return_data: 'all',
     });
-    filters.set_items(items);
 
-    var search = new FF_Search({
-        el: '.filter_search',
-        return_data: 'el',
-        search_fields: [
-            'title',
-        ],
-    });
-    search.set_items(items);
-    search.on('search',res=>{
-        // console.log( 'search', res );
-        items_con.innerHTML = '';
-        res.results.forEach(item=>{
-            items_con.append(item.el);
-        })
-    })
-
-    // var selected_options = [];
-    // var selected_options_con = document.querySelector('.filter_tags_con .selected_options');
-    // filters.on('change_tags',(res)=>{
-    //     var value = res.value;
-    //     if( !value )  return; 
-
-    //     console.log( 'change_tags', value )
-
-    //     // add filter indicators - on click remove
-    //     if( selected_options.indexOf(value) === -1 ) {
-    //         selected_options.push(value);
-    //         var button = document.createElement('button');
-    //         button.innerText = 'x '+ value;
-    //         button.addEventListener('click',()=>{
-    //             var index = selected_options.indexOf(value);
-    //             console.log( 'remove', index, value );
-    //             button.remove();
-    //             selected_options.splice(index, 1);
-    //             filters.filters.tags.splice(index, 1);
-    //             filters.update();
-    //         });
-    //         selected_options_con.appendChild(button);
-    //     }
-    // });
-    
-    // filters.add_field({
-    //     // type: 'dropdown_multiple',
-    //     type: 'dropdown',
-    //     el: '.filter_tags',
-    // });
-
-    filters.add_field({
+    filterer.add_field({
         type: 'items_multiple',
         el: '.filter_tags_buttons',
     });
 
-    filters.add_field({
+    filterer.add_field({
         key: 'reactions',
         type: 'dropdown',
         el: '.filter_reactions',
         filter_type: 'range',
     });
 
-    filters.on('update',(res)=>{
+    filterer.on('update',(res)=>{
         items_con.innerHTML = '';
         res.items_to_show.forEach(item=>{
             items_con.append(item.el);
         })
     });
 
+    // Sort
+    var sorter = new FF_Sort({
+        items: items,
+        el: '.sort',
+        string_types: ['title'],
+    });
+
+    sorter.on('change', function(res){
+        console.log('on sort', res);
+        items_con.innerHTML = '';
+        res.results.forEach(item=>{
+            items_con.append(item.el);
+        });
+    })
+
+    // Search
+    var searcher = new FF_Search({
+        items: items,
+        el: '.filter_search',
+        return_data: 'all',
+        search_fields: [
+            'title',
+            'body'
+        ],
+    });
+
+    searcher.on('search',res=>{
+        // console.log( 'search', {res, filterer} );
+
+        filterer.set_items(res.results);
+        sorter.set_items(res.results);
+
+        if( filterer.active_filters.length ) {
+            // run filter
+            filterer.update();
+        }
+        else {
+            items_con.innerHTML = '';
+            res.results.forEach(item=>{
+                items_con.append(item.el);
+            });
+        }
+
+    })
+    
 }
 init();

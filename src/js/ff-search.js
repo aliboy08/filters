@@ -6,6 +6,7 @@ function FF_Search(options){
     _.typing_timeout = null;
     _.search_string = '';
     _.events = {};
+    _.settings('items', null);
     _.settings('typing_duration', 1000);
     _.settings('search_fields', 'el');
     _.settings('return_data', 'el');

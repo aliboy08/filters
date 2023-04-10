@@ -8,6 +8,7 @@ function FF_Filters(options){
     _.active_filters = [];
     _.fields = {};
     _.debounce;
+    _.settings('items', null);
     _.settings('debounce_duration', 500);
     _.settings('return_data', 'id');
     return this;
